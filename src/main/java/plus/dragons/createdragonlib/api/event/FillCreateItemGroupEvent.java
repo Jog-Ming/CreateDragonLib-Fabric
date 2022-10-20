@@ -1,16 +1,18 @@
 package plus.dragons.createdragonlib.api.event;
 
 import com.simibubi.create.foundation.item.CreateItemGroupBase;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-public class FillCreateItemGroupEvent extends Event {
+public class FillCreateItemGroupEvent {
     private final CreateItemGroupBase itemGroup;
     private final NonNullList<ItemStack> items;
     private final Map<Item, List<ItemStack>> insertions = new IdentityHashMap<>();
@@ -49,5 +51,22 @@ public class FillCreateItemGroupEvent extends Event {
             }
         }
     }
-    
+
+    public interface FillCreateItemGroupCallBack {
+        Event<FillCreateItemGroupCallBack> EVENT = EventFactory.createArrayBacked(FillCreateItemGroupCallBack.class,
+                (listeners) -> (itemGroup, items) -> {
+                    for (FillCreateItemGroupCallBack listener : listeners) {
+                        InteractionResult result = listener.interact(itemGroup, items);
+
+                        if (result != InteractionResult.PASS) {
+                            return result;
+                        }
+                    }
+
+                    return InteractionResult.PASS;
+                });
+
+        InteractionResult interact(CreateItemGroupBase itemGroup, NonNullList<ItemStack> items);
+    }
+
 }
