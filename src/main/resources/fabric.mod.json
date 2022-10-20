@@ -17,7 +17,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "plus.dragons.createdragonlib.DragonLib"
+      "com.example.modid.ExampleMod"
     ]
   },
   "mixins": [
