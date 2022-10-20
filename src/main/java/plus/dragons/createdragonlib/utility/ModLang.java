@@ -2,10 +2,10 @@ package plus.dragons.createdragonlib.utility;
 
 import com.simibubi.create.foundation.utility.LangBuilder;
 import com.simibubi.create.foundation.utility.LangNumberFormat;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
 
 
 public class ModLang {
