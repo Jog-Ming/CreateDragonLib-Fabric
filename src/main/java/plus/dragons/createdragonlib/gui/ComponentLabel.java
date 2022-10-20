@@ -4,11 +4,11 @@ import com.google.common.collect.AbstractIterator;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.widget.Label;
-import com.simibubi.create.foundation.utility.Components;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import plus.dragons.createdragonlib.foundation.utility.Components;
 
 import java.util.*;
 
