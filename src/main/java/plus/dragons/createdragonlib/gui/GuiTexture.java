@@ -5,10 +5,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.UIRenderHelper;
 import com.simibubi.create.foundation.gui.element.ScreenElement;
 import com.simibubi.create.foundation.utility.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class GuiTexture implements ScreenElement {
     public final ResourceLocation location;
@@ -26,29 +26,29 @@ public class GuiTexture implements ScreenElement {
     public GuiTexture(String namespace, String location, int width, int height) {
         this(namespace, location, 0, 0, width, height);
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public void bind() {
         RenderSystem.setShaderTexture(0, location);
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(PoseStack ms, int x, int y) {
         bind();
         GuiComponent.blit(ms, x, y, 0, startX, startY, width, height, 256, 256);
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack ms, int x, int y, GuiComponent component) {
         bind();
         component.blit(ms, x, y, startX, startY, width, height);
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack ms, int x, int y, Color c) {
         bind();
         UIRenderHelper.drawColoredTexture(ms, c, x, y, startX, startY, width, height);
     }
-    
+
 }
