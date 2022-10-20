@@ -1,11 +1,12 @@
 package plus.dragons.createdragonlib.foundation.data.advancement;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
@@ -29,7 +30,7 @@ public class ModAdvancementGen implements DataProvider {
     }
 
     @Override
-    public void run(CachedOutput cache) {
+    public void run(HashCache cache) throws IOException {
         Path path = this.generator.getOutputFolder();
         Set<ResourceLocation> set = Sets.newHashSet();
         Consumer<Advancement> consumer = advancement -> {
@@ -40,7 +41,7 @@ public class ModAdvancementGen implements DataProvider {
                 + advancement.getId().getPath() + ".json"
             );
             try {
-                DataProvider.saveStable(cache, advancement.deconstruct().serializeToJson(), advancementPath);
+                DataProvider.save(new Gson(), cache, advancement.deconstruct().serializeToJson(), advancementPath);
             } catch (IOException ioexception) {
                 LOGGER.error("Couldn't save advancement {}", advancementPath, ioexception);
             }
