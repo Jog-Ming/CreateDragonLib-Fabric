@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "create_dragon_lib",
+  "version": "${version}",
+  "name": "Create Dragon Lib",
+  "description": "A library for Create addons.",
+  "authors": [
+    "MarbleGateKeeper",
+    "LimonBlaze",
+    "Krysztal"
+  ],
+  "contact": {
+    "sources": "https://github.com/Fabricators-of-Create/create-fabric-addon-template"
+  },
+  "license": "MIT",
+  "icon": "assets/modid/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.example.modid.ExampleMod"
+    ]
+  },
+  "mixins": [
+    "create_dragon_lib.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "create": ">=${create_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}

@@ -1,236 +1,123 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-        maven { url = 'https://maven.parchmentmc.org' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "${forgegradle_version}", changing: true
-        classpath "org.parchmentmc:librarian:${librarian_version}"
-        classpath "org.spongepowered:mixingradle:${mixingradle_version}"
-    }
+//file:noinspection GroovyAssignabilityCheck
+//file:noinspection GroovyAccessibility
+//file:noinspection GradlePackageVersionRange
+plugins {
+    id "fabric-loom" version "0.12-SNAPSHOT"
+    id "io.github.juuxel.loom-quiltflower" version "1.+" // Quiltflower, a better decompiler
+    id "org.quiltmc.quilt-mappings-on-loom" version "4.2.0"
+    // Quilt Mappings, for parameters and javadoc. Also hashed mojmap.
+    id "maven-publish"
 }
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'org.spongepowered.mixin'
 
-version = mod_version
-group = 'plus.dragons.createdragonlib' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+version = project.mod_version
 archivesBaseName = "create_dragon_lib-${artifact_minecraft_version}"
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // official   MCVersion             Official field/method names from Mojang mapping files
-    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
-    //
-    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-    //
-    // Parchment is an unofficial project maintained by ParchmentMC, separate from MinecraftForge
-    // Additional setup is needed to use their mappings: https://github.com/ParchmentMC/Parchment/wiki/Getting-Started
-    //
-    // Use non-default mappings at your own risk. They may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg') // Currently, this location cannot be changed from the default.
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=create_dragon_lib.mixins.json'
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
-
-            mods {
-                create_dragon_lib {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=create_dragon_lib.mixins.json'
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
-
-            mods {
-                create_dragon_lib {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'create_dragon_lib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                create_dragon_lib {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
+ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+if (buildNumber != null) {
+    version += "+$buildNumber"
 }
 
-
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
-    maven {
-        name = 'tterrag maven'
-        url = 'https://maven.tterrag.com/'
-    }
-    maven {
-        // Location of the maven that hosts JEI files (and TiC)
-        name 'Progwml6 maven'
-        url 'https://dvs1.progwml6.com/files/maven'
-    }
-    maven {
-        // Location of the maven for vazkii's mods
-        name 'blamejared'
-        url 'https://maven.blamejared.com'
-    }
-    maven {
-        //location of the maven for curios api
-        url = "https://maven.theillusivec4.top/"
-    }
+    maven { url = "https://api.modrinth.com/maven" } // LazyDFU, Suggestion Tweaker
+    maven { url = "https://maven.terraformersmc.com/releases/" } // Mod Menu, EMI
+    maven { url = "https://maven.shedaniel.me/" } // Cloth Config, REI
+    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib, Forge Tags, Milk Lib
+    maven { url = "https://cursemaven.com" } // Forge Config API Port
+    maven { url = "https://maven.tterrag.com/" } // Registrate and Flywheel
+    maven { url = "https://maven.cafeteria.dev" } // Fake Player API
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+    maven { url = "https://jitpack.io/" } // Mixin Extras, fabric ASM
+    maven { url = "https://dvs1.progwml6.com/files/maven/" } // JEI
+    maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
 }
 
 dependencies {
-    // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // dev environment
+    minecraft("com.mojang:minecraft:${project.minecraft_version}")
+    mappings(loom.layered {
+        it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${project.minecraft_version}+build.${project.qm_version}:v2"))
+        it.parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+        it.officialMojangMappings { nameSyntheticMembers = false }
+    })
+    modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
+    modLocalRuntime("maven.modrinth:lazydfu:0.1.2") // lazydfu - improves start times
+    modLocalRuntime("maven.modrinth:suggestion-tweaker:${project.suggestion_tweaker_version}")
+    // suggestion tweaker - dev QOL, improves command suggestions
+    modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") { exclude(group: "net.fabricmc.fabric-api") }
+    // required for suggestion tweaker and REI
+    modLocalRuntime("com.terraformersmc:modmenu:${project.modmenu_version}") {
+        exclude group: "net.fabricmc";
+        exclude group: "net.fabricmc.fabric-api"
+    } // always good to have
 
-    // Real mod deobf dependency examples - these get remapped to your current mappings
-    // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
-    // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
-    // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
+    // recipe viewers
+    modCompileOnly("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
+    modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
 
-    // Examples using mod jars from ./libs
-    // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-    implementation fg.deobf("com.simibubi.create:create-${create_minecraft_version}:${create_version}:slim") { transitive = false }
-    implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}")
-    implementation  fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+    // create setup
+    modImplementation("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_version}") { transitive = false }
+    modImplementation("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version}+${project.minecraft_version}-dev.${project.port_lib_hash}")
+    modImplementation("me.alphamode:ForgeTags:${project.forge_tags_version}")
+    modImplementation("com.electronwill.night-config:core:${project.night_config_core_version}")
+    modImplementation("com.electronwill.night-config:toml:${project.night_config_toml_version}")
+    modImplementation("curse.maven:forge-config-api-port-fabric-547434:${project.config_api_id}") { transitive = false }
+    modImplementation("com.tterrag.registrate:Registrate:${project.registrate_version}")
+    modImplementation("com.jozufozu.flywheel:flywheel-fabric-${flywheel_minecraft_version}:${project.flywheel_version}")
+    modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${project.reach_entity_attributes_version}")
+//    modImplementation("dev.cafeteria:fake-player-api:${project.fake_player_api_version}")
+    modImplementation("io.github.tropheusj:milk-lib:${project.milk_lib_version}")
+    implementation("com.google.code.findbugs:jsr305:${project.jsr305_version}")
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
-
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_minecraft_version}-${curios_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_minecraft_version}-${curios_version}")
-
-    // For more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+    // dependencies
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
 }
 
-// Include resources generated by data generators.
-sourceSets.main.resources {
-    srcDir'src/generated/resources'
-    exclude '.cache/'
-}
+processResources {
+    // require dependencies to be the version compiled against or newer
+    Map<String, String> properties = new HashMap<>()
+    properties.put("version", project.version)
+    properties.put("loader_version", project.loader_version)
+    properties.put("fabric_version", project.fabric_version)
+    properties.put("create_version", project.create_version)
+    properties.put("minecraft_version", project.minecraft_version)
+    properties.put("java_version", sourceCompatibility)
 
-mixin {
-    add sourceSets.main, 'create_dragon_lib.refmap.json'
-    config 'create_dragon_lib.mixins.json'
+    properties.forEach((k, v) -> inputs.property(k, v))
 
-    debug.verbose = true
-    debug.export = true
-}
-
-
-// Example for how to get properties into the manifest for reading at runtime.
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "create_dragon_lib",
-                "Specification-Vendor"    : "dragons.plus",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "dragons.plus",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'MixinConfigs': 'create_dragon_lib.mixins.json'
-        ])
-    }
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = archivesBaseName
-
-            from components.java
-            fg.component(it)
-        }
-    }
-    repositories {
-        maven {
-            name = "repository"
-            url = "https://maven.dragons.plus/Releases"
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
+    filesMatching("fabric.mod.json") {
+        expand properties
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    it.options.release = Integer.parseInt(sourceCompatibility)
+}
+
+java {
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+    }
 }
