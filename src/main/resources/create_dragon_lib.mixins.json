@@ -5,10 +5,10 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AdvancementBehaviourAccessor",
-    "AllFluidsMixin",
     "CreateAdvancementConstructor",
     "CreateAdvancementMixin",
-    "CreateItemGroupBaseMixin"
+    "CreateItemGroupBaseMixin",
+    "FluidReactionsMixin"
   ],
   "client": [],
   "injectors": {

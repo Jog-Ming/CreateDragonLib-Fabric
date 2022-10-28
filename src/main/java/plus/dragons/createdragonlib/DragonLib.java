@@ -13,6 +13,9 @@ public class DragonLib implements ModInitializer {
 
         ModTriggerFactory.register();
         new FluidLavaInteractionRegisterEvent();
-
+        LOGGER.info("Create: Dragon Lib " +
+                ModLoadingContext.get().getActiveContainer().getModInfo().getVersion() +
+                " has initialized, ready to support your Create add-ons!"
+        );
     }
 }
