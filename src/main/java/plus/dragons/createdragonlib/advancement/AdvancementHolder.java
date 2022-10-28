@@ -2,7 +2,6 @@ package plus.dragons.createdragonlib.advancement;
 
 import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.advancement.CreateAdvancement;
-import com.simibubi.create.foundation.utility.Components;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import net.minecraft.advancements.Advancement;
@@ -18,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import plus.dragons.createdragonlib.advancement.critereon.SimpleTrigger;
 import plus.dragons.createdragonlib.advancement.critereon.TriggerFactory;
 import plus.dragons.createdragonlib.mixin.CreateAdvancementConstructor;
+import plus.dragons.createdragonlib.utility.Components;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -38,12 +38,12 @@ public class AdvancementHolder {
     @Nullable
     protected final CreateAdvancement createAdvancement;
     protected Advancement advancement;
-    
+
     protected AdvancementHolder(String modid, String id, Advancement.Builder builder, @Nullable AdvancementHolder parent, boolean builtin, String title, String description, TriggerFactory triggerFactory) {
-        this.id = new ResourceLocation(modid,id);
+        this.id = new ResourceLocation(modid, id);
         this.builder = builder;
         this.parent = parent;
-        if(builtin) {
+        if (builtin) {
             this.builtinTrigger = triggerFactory.simple(new ResourceLocation(modid, "builtin/" + id));
             this.builder.addCriterion("builtin", builtinTrigger.instance());
         } else this.builtinTrigger = null;
@@ -54,38 +54,38 @@ public class AdvancementHolder {
         this.title = title;
         this.description = description;
     }
-    
+
     public ResourceLocation id() {
         return id;
     }
-    
+
     public String titleKey() {
         return titleKey;
     }
-    
+
     public String descriptionKey() {
         return descriptionKey;
     }
-    
+
     public String title() {
         return title;
     }
-    
+
     public String description() {
         return description;
     }
-    
+
     @Nullable
     public SimpleTrigger getTrigger() {
         return builtinTrigger;
     }
-    
+
     public CreateAdvancement asCreateAdvancement() {
-        if(createAdvancement == null)
+        if (createAdvancement == null)
             throw new UnsupportedOperationException("Advancement [" + id + "] can not convert into CreateAdvancement!");
         return createAdvancement;
     }
-    
+
     public boolean isAlreadyAwardedTo(Player player) {
         if (!(player instanceof ServerPlayer sp))
             return true;
@@ -94,7 +94,7 @@ public class AdvancementHolder {
             return true;
         return sp.getAdvancements().getOrStartProgress(advancement).isDone();
     }
-    
+
     public void awardTo(Player player) {
         if (!(player instanceof ServerPlayer sp))
             return;
@@ -102,12 +102,12 @@ public class AdvancementHolder {
             throw new UnsupportedOperationException("Advancement [" + id + "] uses external Triggers, it cannot be awarded directly");
         builtinTrigger.trigger(sp);
     }
-    
+
     public void save(Consumer<Advancement> consumer) {
         if (parent != null) builder.parent(parent.advancement);
         advancement = builder.save(consumer, id.toString());
     }
-    
+
     public void appendToLang(JsonObject object) {
         object.addProperty(titleKey(), title());
         object.addProperty(descriptionKey(), description());
@@ -116,7 +116,7 @@ public class AdvancementHolder {
     public static JsonObject provideLangEntries(String modid) {
         JsonObject object = new JsonObject();
         var advancements = ENTRIES_MAP.get(modid);
-        if(advancements==null) return object;
+        if (advancements == null) return object;
         for (var advancement : advancements) {
             advancement.appendToLang(object);
         }
@@ -141,13 +141,13 @@ public class AdvancementHolder {
         private boolean hide = false;
         private final TriggerFactory factory;
 
-        public Builder(String modid,String id, TriggerFactory factory) {
+        public Builder(String modid, String id, TriggerFactory factory) {
             this.modid = modid;
             this.id = id;
-            this.background = "root".equals(id) ? new ResourceLocation(modid,"textures/gui/advancements.png") : null;
+            this.background = "root".equals(id) ? new ResourceLocation(modid, "textures/gui/advancements.png") : null;
             this.factory = factory;
         }
-    
+
         public Builder title(String title) {
             this.title = title;
             return this;
@@ -215,21 +215,21 @@ public class AdvancementHolder {
         public AdvancementHolder build() {
             if (hide)
                 description += "\u00A77\n(Hidden Advancement)";
-            AdvancementHolder advancement = new AdvancementHolder(modid,id, builder, parent, builtin, title, description, factory);
+            AdvancementHolder advancement = new AdvancementHolder(modid, id, builder, parent, builtin, title, description, factory);
             builder.display(
-                icon,
-                Components.translatable(advancement.titleKey),
-                Components.translatable(advancement.descriptionKey).withStyle(s -> s.withColor(0xDBA213)),
-                background,
-                frame,
-                toast,
-                announce,
-                hide
+                    icon,
+                    Components.translatable(advancement.titleKey),
+                    Components.translatable(advancement.descriptionKey).withStyle(s -> s.withColor(0xDBA213)),
+                    background,
+                    frame,
+                    toast,
+                    announce,
+                    hide
             );
             ENTRIES_MAP.computeIfAbsent(modid, $ -> new ArrayList<>()).add(advancement);
             return advancement;
         }
-        
+
     }
-    
+
 }
