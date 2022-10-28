@@ -1,12 +1,10 @@
 package plus.dragons.createdragonlib.advancement;
 
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,26 +12,26 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ModAdvancementGen implements DataProvider {
+class AdvancementDatagen implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String namespace;
     private final DataGenerator generator;
 
-    public ModAdvancementGen(String namespace, DataGenerator generator) {
+    public AdvancementDatagen(String namespace, DataGenerator generator) {
         this.namespace = namespace;
         this.generator = generator;
     }
 
     @Override
-    public void run(HashCache cache) throws IOException {
+    public void run(CachedOutput cache) {
         Path path = this.generator.getOutputFolder();
         Set<ResourceLocation> set = Sets.newHashSet();
-        Consumer<Advancement> consumer = advancement -> {
+        Consumer<net.minecraft.advancements.Advancement> consumer = advancement -> {
             if (!set.add(advancement.getId()))
                 throw new IllegalStateException("Duplicate advancement " + advancement.getId());
             Path advancementPath = path.resolve("data/"
@@ -41,12 +39,12 @@ public class ModAdvancementGen implements DataProvider {
                 + advancement.getId().getPath() + ".json"
             );
             try {
-                DataProvider.save(new Gson(), cache, advancement.deconstruct().serializeToJson(), advancementPath);
+                DataProvider.saveStable(cache, advancement.deconstruct().serializeToJson(), advancementPath);
             } catch (IOException ioexception) {
                 LOGGER.error("Couldn't save advancement {}", advancementPath, ioexception);
             }
         };
-        var advancements = ModAdvancement.ENTRIES_MAP.get(namespace);
+        var advancements = Advancement.ENTRIES_MAP.get(namespace);
         if(advancements!=null)
             for (var advancement :advancements) {
                 advancement.save(consumer);
