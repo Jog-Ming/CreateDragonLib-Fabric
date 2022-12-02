@@ -10,7 +10,7 @@
     "Krysztal"
   ],
   "contact": {
-    "sources": "https://github.com/Fabricators-of-Create/create-fabric-addon-template"
+    "sources": "https://github.com/DragonsPlusMinecraft/CreateDragonLibFabric"
   },
   "license": "MIT",
   "icon": "assets/modid/icon.png",
