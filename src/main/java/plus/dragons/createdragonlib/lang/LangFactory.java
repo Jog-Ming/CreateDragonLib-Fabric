@@ -2,8 +2,8 @@ package plus.dragons.createdragonlib.lang;
 
 import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.ponder.PonderLocalization;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.data.event.GatherDataEvent;
 import plus.dragons.createdragonlib.advancement.AdvancementHolder;
 
 import java.util.Collections;
@@ -17,21 +17,20 @@ public class LangFactory {
         this.modid = modid;
         this.langMerger = new LangMerger(name, modid);
     }
-    
+
     public static LangFactory create(String name, String modid) {
         return new LangFactory(name, modid);
     }
-    
+
     /**
-     * Register the {@link LangMerger} instance to {@link GatherDataEvent}. <br>
+     * Register the {@link LangMerger} instance to {@link FabricDataGenerator}. <br>
      * Should be called in the mod's main class' constructor. <br>
      */
-    public void datagen(final GatherDataEvent event) {
-        DataGenerator datagen = event.getGenerator();
+    public void datagen(final FabricDataGenerator datagen) {
         langMerger.dataGenerator = datagen;
-        datagen.addProvider(event.includeClient(), langMerger);
+        datagen.addProvider(langMerger);
     }
-    
+
     /**
      * Add a category of dynamic generated lang entries for the {@link LangMerger}.
      * @param display the display header for the category
@@ -43,7 +42,7 @@ public class LangFactory {
         langMerger.partials.add(new LangPartial.Gen(modid, display, provider, preTask));
         return this;
     }
-    
+
     /**
      * Merge a file from {@code assets/modid/lang/partial/} folder to merge into the {@link LangMerger}.
      * @param filename the filename, without extension (as it should always be ".json")
@@ -54,7 +53,7 @@ public class LangFactory {
         langMerger.partials.add(new LangPartial.Merge(modid, display, filename));
         return this;
     }
-    
+
     /**
      * Add ponder localization generator for the {@link LangMerger}.
      * @param preTask the task to run before fetching lang entries from the provider,
@@ -75,7 +74,7 @@ public class LangFactory {
         );
         return this;
     }
-    
+
     /**
      * Add advancement localization generator for the {@link LangMerger}. <br>
      * Should only be used with {@link AdvancementHolder}.
@@ -92,7 +91,7 @@ public class LangFactory {
         );
         return this;
     }
-    
+
     /**
      * Merge {@code assets/modid/lang/partial/tooltips.json} into the {@link LangMerger}. <br>
      * See Create's tooltips.json for how to create your Create-styled tooltip localization.
@@ -102,7 +101,7 @@ public class LangFactory {
         langMerger.partials.add(new LangPartial.Merge(modid, "Item Descriptions", "tooltips"));
         return this;
     }
-    
+
     /**
      * Merge {@code assets/modid/lang/partial/interface.json} into the {@link LangMerger}.
      * @return self
@@ -111,12 +110,12 @@ public class LangFactory {
         langMerger.partials.add(new LangPartial.Merge(modid, "UI & Messages", "interface"));
         return this;
     }
-    
+
     /**
      * Define keys that should not be transfer to the foreign lang file templates. <br>
      * @param entries
      * @return self
-     * @see com.simibubi.create.foundation.data.LangMerger#populateLangIgnore()
+     * @see com.simibubi.create.foundation.data.LangMerger#populateLangIgnore() 
      */
     public LangFactory ignore(String... entries) {
         Collections.addAll(langMerger.ignore, entries);

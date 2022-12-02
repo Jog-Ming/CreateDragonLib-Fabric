@@ -1,7 +1,6 @@
 package plus.dragons.createdragonlib.advancement;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import plus.dragons.createdragonlib.advancement.critereon.TriggerFactory;
 
 public class AdvancementFactory {
@@ -13,7 +12,7 @@ public class AdvancementFactory {
         this.modid = modid;
         this.advancementGen = new AdvancementGen(name, modid);
     }
-    
+
     public static AdvancementFactory create(String name, String modid) {
         return new AdvancementFactory(name, modid);
     }
@@ -21,19 +20,18 @@ public class AdvancementFactory {
     public AdvancementHolder.Builder builder(String id) {
         return new AdvancementHolder.Builder(modid, id, triggerFactory);
     }
-    
+
     public TriggerFactory getTriggerFactory() {
         return triggerFactory;
     }
-    
-    public void datagen(final GatherDataEvent event) {
-        DataGenerator datagen = event.getGenerator();
+
+    public void datagen(final FabricDataGenerator datagen) {
         advancementGen.generator = datagen;
-        datagen.addProvider(event.includeServer(), advancementGen);
+        datagen.addProvider(advancementGen);
     }
 
     public void register() {
         triggerFactory.register();
     }
-    
+
 }
