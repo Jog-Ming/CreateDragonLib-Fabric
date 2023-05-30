@@ -1,9 +1,11 @@
 package plus.dragons.createdragonlib;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import plus.dragons.createdragonlib.tag.TagGen;
 
 public class DragonLib implements ModInitializer {
 
@@ -12,12 +14,14 @@ public class DragonLib implements ModInitializer {
 
   @Override
   public void onInitialize() {
-//    ModTriggerFactory.register();
-//    new FluidLavaInteractionRegisterEvent();
     LOGGER.info(
       "Create: Dragon Lib " +
       FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getName() +
       " has initialized, ready to support your Create add-ons!"
     );
+  }
+
+  public void datagen(final FabricDataGenerator datagen) {
+    TagGen.genAll();
   }
 }

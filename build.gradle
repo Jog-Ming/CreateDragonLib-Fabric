@@ -29,7 +29,8 @@ repositories {
     maven { url = "https://maven.cafeteria.dev/releases/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://maven.gegy.dev" }
-    maven { url = "https://dvs1.progwml6.com/files/maven/" }
+    // Old and unused
+    //maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven { url = "https://modmaven.dev" }
     maven {
         url = "https://maven.jamieswhiteshirt.com/libs-release"
@@ -92,15 +93,20 @@ sourceSets {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = archivesBaseName
+
             from components.java
+            fg.component(it)
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
+        maven {
+            name = "repository"
+            url = "https://maven.dragons.plus/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
     }
 }
