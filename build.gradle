@@ -96,7 +96,6 @@ publishing {
             artifactId = archivesBaseName
 
             from components.java
-            fg.component(it)
         }
     }
     repositories {
