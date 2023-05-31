@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "id": "create_dragon_lib",
-  "version": "${version}",
+  "version": "1.2.0",
   "name": "Create Dragon Lib",
   "description": "A library for Create addons.",
   "authors": [
     "MarbleGateKeeper",
     "LimonBlaze",
-    "Krysztal"
+    "Krysztal",
+    "IThundxr"
   ],
   "contact": {
     "sources": "https://github.com/DragonsPlusMinecraft/CreateDragonLibFabric"
   },
   "license": "MIT",
-  "icon": "assets/modid/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -24,9 +24,9 @@
     "create_dragon_lib.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
-    "fabric": ">=${fabric_version}",
-    "create": ">=${create_version}",
-    "minecraft": ">=${minecraft_version}"
+    "minecraft": ">=1.19.2",
+    "fabricloader": ">=0.14.10",
+    "fabric": ">=0.67.0+1.19.2",
+    "create": ">=0.5.0f-776"
   }
 }

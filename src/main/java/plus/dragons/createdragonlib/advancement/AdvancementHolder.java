@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import plus.dragons.createdragonlib.advancement.critereon.SimpleTrigger;
 import plus.dragons.createdragonlib.advancement.critereon.TriggerFactory;
 import plus.dragons.createdragonlib.mixin.CreateAdvancementConstructor;
-import plus.dragons.createdragonlib.utility.Components;
+import com.simibubi.create.foundation.utility.Components;
 
 import java.util.*;
 import java.util.function.Consumer;

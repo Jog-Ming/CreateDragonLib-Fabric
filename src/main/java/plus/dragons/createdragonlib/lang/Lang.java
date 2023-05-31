@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 
 import java.util.Locale;
 
@@ -104,7 +104,7 @@ public class Lang {
     public LangBuilder itemName(ItemStack stack) {
         return builder().add(stack.getHoverName().copy());
     }
-    
+
     /**
      * Create's a {@link LangBuilder} with {@link Lang#modid} and append the name of a given {@link FluidStack}
      * @param stack the {@link FluidStack}
