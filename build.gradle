@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = "create_dragon_lib_fabric-${artifact_minecraft_version}"
+archivesBaseName = "create_dragon_lib-fabric-${artifact_minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 
@@ -29,8 +29,6 @@ repositories {
     maven { url = "https://maven.cafeteria.dev/releases/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://maven.gegy.dev" }
-    // Old and unused
-    //maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven { url = "https://modmaven.dev" }
     maven {
         url = "https://maven.jamieswhiteshirt.com/libs-release"
