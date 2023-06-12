@@ -1,6 +1,7 @@
 package plus.dragons.createdragonlib.init;
 
-import com.simibubi.create.foundation.item.CreateItemGroupBase;
+import com.simibubi.create.infrastructure.item.BaseCreativeModeTab;
+import com.simibubi.create.infrastructure.item.CreateCreativeModeTab;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.NonNullList;
@@ -13,11 +14,11 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.*;
 
 public class FillCreateItemGroupEvent {
-    private final CreateItemGroupBase itemGroup;
+    private final BaseCreativeModeTab itemGroup;
     private final NonNullList<ItemStack> items;
     private final Map<Item, List<ItemStack>> insertions = new IdentityHashMap<>();
-    
-    public FillCreateItemGroupEvent(CreateItemGroupBase itemGroup, NonNullList<ItemStack> items) {
+
+    public FillCreateItemGroupEvent(BaseCreativeModeTab itemGroup, NonNullList<ItemStack> items) {
         this.itemGroup = itemGroup;
         this.items = items;
     }
@@ -26,7 +27,7 @@ public class FillCreateItemGroupEvent {
      * Get the creative mod tab, so you could determine which tab are you adding into.
      * @return the creative mod tab
      */
-    public CreateItemGroupBase getItemGroup() {
+    public BaseCreativeModeTab getItemGroup() {
         return itemGroup;
     }
     
@@ -87,7 +88,7 @@ public class FillCreateItemGroupEvent {
                     return InteractionResult.PASS;
                 });
 
-        InteractionResult interact(CreateItemGroupBase itemGroup, NonNullList<ItemStack> items);
+        InteractionResult interact(CreateCreativeModeTab itemGroup, NonNullList<ItemStack> items);
     }
 
 }

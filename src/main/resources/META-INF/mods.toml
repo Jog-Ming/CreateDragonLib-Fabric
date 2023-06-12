@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT"
+
+[[mods]]
+modId="create_dragon_lib"
+version="${file.jarVersion}"
+displayName="Create: Dragon Lib"
+#updateJSONURL="https://change.me.example.invalid/updates.json"
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
+#logoFile="examplemod.png"
+#credits="Thanks for this example mod goes to Java"
+authors="LimonBlaze & MarbleGateKeeper"
+description='''
+A library for Create addons.
+'''
+
+[[dependencies.create_dragon_lib]]
+    modId="forge"
+    mandatory=true
+    versionRange="[43,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.create_dragon_lib]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.create_dragon_lib]]
+    modId="create"
+    mandatory=true
+    versionRange="[0.5.0.f,)"
+    ordering="NONE"
+    side="BOTH"

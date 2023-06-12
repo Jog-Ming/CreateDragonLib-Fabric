@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = "create_dragon_lib-fabric-${artifact_minecraft_version}"
+archivesBaseName = "create_dragon_lib_fabric-${artifact_minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 
@@ -29,6 +29,8 @@ repositories {
     maven { url = "https://maven.cafeteria.dev/releases/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://maven.gegy.dev" }
+    // Old and unused
+    //maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven { url = "https://modmaven.dev" }
     maven {
         url = "https://maven.jamieswhiteshirt.com/libs-release"
@@ -39,27 +41,31 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings(loom.layered {
 //        it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${project.minecraft_version}+build.${project.qm_version}:v2"))
-        it.parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+        it.parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
         it.officialMojangMappings { nameSyntheticMembers = false }
     })
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.simibubi.create:create-fabric-1.19.2:${project.create_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    modImplementation "com.simibubi.create:create-fabric-1.19.2:${create_version}"
 }
 
 processResources {
-    inputs.property "version", project.version
+    // require dependencies to be the version compiled against or newer
+    Map<String, String> properties = new HashMap<>()
+    properties.put("version", mod_version)
+    properties.put("fabric_loader_version", fabric_loader_version)
+    properties.put("fabric_api_version", fabric_api_version)
+    properties.put("create_version", create_version)
+    properties.put("minecraft_version", minecraft_version)
+
+    properties.forEach((k, v) -> inputs.property(k, v))
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
-        expand "minecraft_version": project.minecraft_version
-        expand "create": project.create_version
-        expand "fabric": project.fabric_version
-        expand "fabricloader": project.loader_version
+        expand properties
     }
 }
 
@@ -73,7 +79,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${project.archivesBaseName}" }
     }
 }
 
