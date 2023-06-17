@@ -1,4 +1,4 @@
-name: Publish to Maven
+name: Publish Snapshot to Maven
 on: [workflow_dispatch]
 
 permissions:
@@ -24,4 +24,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Publish to Maven
-        run: ./gradlew publishReleasePublicationToReleaseRepository -PreleaseUsername=${{ secrets.MAVEN_USERNAME }} -PreleasePassword=${{ secrets.MAVEN_PASSWORD }}
+        run: ./gradlew publishSnapshotPublicationToSnapshotRepository -PsnapshotUsername=${{ secrets.MAVEN_USERNAME }} -PsnapshotPassword=${{ secrets.MAVEN_PASSWORD }}

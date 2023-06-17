@@ -96,16 +96,28 @@ sourceSets {
 // configure the maven publication
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        release(MavenPublication) {
             artifactId = archivesBaseName
-
+            from components.java
+        }
+        snapshot(MavenPublication) {
+            artifactId = archivesBaseName
+            version = "${version}-SNAPSHOT.${new Date().format('yyyyMMdd')}"
             from components.java
         }
     }
     repositories {
         maven {
-            name = "repository"
+            name = "release"
             url = "https://maven.dragons.plus/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+        maven {
+            name = "snapshot"
+            url = "https://maven.dragons.plus/snapshots"
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)
