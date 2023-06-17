@@ -16,12 +16,9 @@ public class CreateItemGroupBaseMixin {
 
     @Inject(method = "fillItemList", at = @At("TAIL"))
     private void postFillCreateItemGroupEvent(NonNullList<ItemStack> items, CallbackInfo ci) {
-//        var event = new FillCreateItemGroupEvent((BaseCreativeModeTab) (Object) this, items);
-//        MinecraftForge.EVENT_BUS.post(event);
-//        event.apply();
 
         InteractionResult result = FillCreateItemGroupEvent
-                .FillCreateItemGroupCallBack
+                .CallBack
                 .EVENT
                 .invoker()
                 .interact((CreateCreativeModeTab) (Object) this, items);
