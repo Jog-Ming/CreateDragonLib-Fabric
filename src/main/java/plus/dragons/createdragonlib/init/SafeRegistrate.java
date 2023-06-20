@@ -14,17 +14,17 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
 public class SafeRegistrate extends CreateRegistrate {
-    
+
     public SafeRegistrate(String modid) {
         super(modid);
     }
-    
+
 //    @Override
 //    public SafeRegistrate registerEventListeners(IEventBus bus) {
 //        super.registerEventListeners(bus);
 //        return this;
 //    }
-    
+
     public <T extends Entity> CreateEntityBuilder<T, CreateRegistrate> entity(
             String name,
             EntityType.EntityFactory<T> factory,
@@ -32,20 +32,19 @@ public class SafeRegistrate extends CreateRegistrate {
             MobCategory group,
             int range, int updateFrequency,
             boolean sendVelocity, boolean immuneToFire,
-            NonNullConsumer<FabricEntityTypeBuilder<T>> propertyBuilder)
-    {
+            NonNullConsumer<FabricEntityTypeBuilder<T>> propertyBuilder) {
         String id = Lang.asId(name);
         var builder = this.entity(id, factory, group);
         builder.properties(b -> {
-                if (immuneToFire)
-                    b.fireImmune();
-                b.trackRangeChunks(range)
-                        .trackedUpdateRate(updateFrequency)
-                        .forceTrackedVelocityUpdates(sendVelocity);
-                propertyBuilder.accept(b);
-            })
-            .renderer(renderer);
+                    if (immuneToFire)
+                        b.fireImmune();
+                    b.trackRangeChunks(range)
+                            .trackedUpdateRate(updateFrequency)
+                            .forceTrackedVelocityUpdates(sendVelocity);
+                    propertyBuilder.accept(b);
+                })
+                .renderer(renderer);
         return builder;
     }
-    
+
 }

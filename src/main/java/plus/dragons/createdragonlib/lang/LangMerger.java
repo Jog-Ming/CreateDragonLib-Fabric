@@ -58,267 +58,267 @@ SOFTWARE.
 @SuppressWarnings("UnstableApiUsage")
 @ApiStatus.Internal
 class LangMerger implements DataProvider {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Gson GSON = new GsonBuilder()
-		.setPrettyPrinting()
-		.disableHtmlEscaping()
-		.create();
-	private static final String CATEGORY_HEADER = "\t\"_\": \"->------------------------]  %s  [------------------------<-\",";
-	private final String modid;
-	private final String name;
-	
-	private final List<Object> mergedLangData = new ArrayList<>();
-	private final Map<String, List<Object>> populatedLangData = new HashMap<>();
-	private final Map<String, Map<String, String>> allLocalizedEntries = new HashMap<>();
-	private final Map<String, MutableInt> missingTranslationTally = new HashMap<>();
-	private final Map<String, MutableInt> existingButActuallyMissingTranslationTally = new HashMap<>();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
+    private static final String CATEGORY_HEADER = "\t\"_\": \"->------------------------]  %s  [------------------------<-\",";
+    private final String modid;
+    private final String name;
 
-	final List<LangPartial> partials = new ArrayList<>();
-	DataGenerator dataGenerator;
-	List<String> ignore = new ArrayList<>();
+    private final List<Object> mergedLangData = new ArrayList<>();
+    private final Map<String, List<Object>> populatedLangData = new HashMap<>();
+    private final Map<String, Map<String, String>> allLocalizedEntries = new HashMap<>();
+    private final Map<String, MutableInt> missingTranslationTally = new HashMap<>();
+    private final Map<String, MutableInt> existingButActuallyMissingTranslationTally = new HashMap<>();
 
-	LangMerger(String name, String modid) {
-		this.modid = modid;
-		this.name = name;
-	}
+    final List<LangPartial> partials = new ArrayList<>();
+    DataGenerator dataGenerator;
+    List<String> ignore = new ArrayList<>();
 
-	@Override
-	public String getName() {
-		return name + " Lang Merger";
-	}
+    LangMerger(String name, String modid) {
+        this.modid = modid;
+        this.name = name;
+    }
 
-	@Override
-	public void run(CachedOutput cache) throws IOException {
-		Path path = this.dataGenerator.getOutputFolder()
-			.resolve("assets/" + modid + "/lang/" + "en_us.json");
-		
-		for(Pair<String, JsonElement> pair : getAllLocalizationFiles()) {
-			if(!pair.getRight().isJsonObject())
-				continue;
-			Map<String, String> localizedEntries = new HashMap<>();
-			JsonObject jsonObject = pair.getRight().getAsJsonObject();
-			String langkKey = pair.getKey();
-			existingButActuallyMissingTranslationTally.put(langkKey, new MutableInt(0));
-			jsonObject.entrySet()
-				.stream()
-				.forEachOrdered(entry -> {
-					String key = entry.getKey();
-					if(key.startsWith("_"))
-						return;
-					String value = entry.getValue()
-						.getAsString();
-					if(value.startsWith("UNLOCALIZED: "))
-						existingButActuallyMissingTranslationTally.get(langkKey).increment();
-					localizedEntries.put(key, value);
-				});
-			allLocalizedEntries.put(langkKey, localizedEntries);
-			populatedLangData.put(langkKey, new ArrayList<>());
-			missingTranslationTally.put(langkKey, new MutableInt(0));
-		}
-		
-		collectExistingEntries(path);
-		collectEntries();
-		if(mergedLangData.isEmpty())
-			return;
-		
-		save(cache, mergedLangData, -1, path, "Merging en_us.json with hand-written lang entries...");
-		for(Entry<String, List<Object>> localization : populatedLangData.entrySet()) {
-			String key = localization.getKey();
-			Path populatedLangPath = this.dataGenerator.getOutputFolder()
-				.resolve("assets/" + modid + "/lang/unfinished/" + key);
-			save(cache, localization.getValue(), missingTranslationTally.get(key).intValue() + existingButActuallyMissingTranslationTally.get(key).intValue(),
-					populatedLangPath, "Populating " + key + " with missing entries...");
-		}
-	}
-	
-	private boolean shouldIgnore(String key) {
-		for (String string : ignore)
-			if (key.startsWith(string))
-				return true;
-		return false;
-	}
+    @Override
+    public String getName() {
+        return name + " Lang Merger";
+    }
 
-	private void collectExistingEntries(Path path) throws IOException {
-		if (!Files.exists(path)) {
-			LOGGER.warn("Nothing to merge! It appears no lang was generated before me.");
-			return;
-		}
+    @Override
+    public void run(CachedOutput cache) throws IOException {
+        Path path = this.dataGenerator.getOutputFolder()
+                .resolve("assets/" + modid + "/lang/" + "en_us.json");
 
-		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
+        for (Pair<String, JsonElement> pair : getAllLocalizationFiles()) {
+            if (!pair.getRight().isJsonObject())
+                continue;
+            Map<String, String> localizedEntries = new HashMap<>();
+            JsonObject jsonObject = pair.getRight().getAsJsonObject();
+            String langkKey = pair.getKey();
+            existingButActuallyMissingTranslationTally.put(langkKey, new MutableInt(0));
+            jsonObject.entrySet()
+                    .stream()
+                    .forEachOrdered(entry -> {
+                        String key = entry.getKey();
+                        if (key.startsWith("_"))
+                            return;
+                        String value = entry.getValue()
+                                .getAsString();
+                        if (value.startsWith("UNLOCALIZED: "))
+                            existingButActuallyMissingTranslationTally.get(langkKey).increment();
+                        localizedEntries.put(key, value);
+                    });
+            allLocalizedEntries.put(langkKey, localizedEntries);
+            populatedLangData.put(langkKey, new ArrayList<>());
+            missingTranslationTally.put(langkKey, new MutableInt(0));
+        }
 
-			/*
-			 * Erase additional sections from previous lang in case registrate did not
-			 * create a new one (this assumes advancements to be the first section after
-			 * game elements)
-			 */
-			Set<String> keysToRemove = new HashSet<>();
-			MutableBoolean startErasing = new MutableBoolean();
-			jsonobject.entrySet()
-					.stream()
-					.forEachOrdered(entry -> {
-						String key = entry.getKey();
-						if (key.startsWith("advancement"))
-							startErasing.setTrue();
-						if (startErasing.isFalse())
-							return;
-						keysToRemove.add(key);
-					});
-			jsonobject.remove("_");
-			keysToRemove.forEach(jsonobject::remove);
+        collectExistingEntries(path);
+        collectEntries();
+        if (mergedLangData.isEmpty())
+            return;
 
-			addAll("Game Elements", jsonobject);
-		}
-	}
+        save(cache, mergedLangData, -1, path, "Merging en_us.json with hand-written lang entries...");
+        for (Entry<String, List<Object>> localization : populatedLangData.entrySet()) {
+            String key = localization.getKey();
+            Path populatedLangPath = this.dataGenerator.getOutputFolder()
+                    .resolve("assets/" + modid + "/lang/unfinished/" + key);
+            save(cache, localization.getValue(), missingTranslationTally.get(key).intValue() + existingButActuallyMissingTranslationTally.get(key).intValue(),
+                    populatedLangPath, "Populating " + key + " with missing entries...");
+        }
+    }
 
-	private void addAll(String header, JsonObject jsonObject) {
-		header = String.format(CATEGORY_HEADER, header);
+    private boolean shouldIgnore(String key) {
+        for (String string : ignore)
+            if (key.startsWith(string))
+                return true;
+        return false;
+    }
 
-		writeData("\n");
-		writeData(header);
-		writeData("\n\n");
+    private void collectExistingEntries(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            LOGGER.warn("Nothing to merge! It appears no lang was generated before me.");
+            return;
+        }
 
-		MutableObject<String> previousKey = new MutableObject<>("");
-		jsonObject.entrySet()
-			.stream()
-			.forEachOrdered(entry -> {
-				String key = entry.getKey();
-				if (shouldIgnore(key))
-					return;
-				String value = entry.getValue()
-					.getAsString();
-				if (!previousKey.getValue()
-					.isEmpty() && shouldAddLineBreak(key, previousKey.getValue()))
-					writeData("\n");
-				writeEntry(key, value);
-				previousKey.setValue(key);
-			});
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
 
-		writeData("\n");
-	}
+            /*
+             * Erase additional sections from previous lang in case registrate did not
+             * create a new one (this assumes advancements to be the first section after
+             * game elements)
+             */
+            Set<String> keysToRemove = new HashSet<>();
+            MutableBoolean startErasing = new MutableBoolean();
+            jsonobject.entrySet()
+                    .stream()
+                    .forEachOrdered(entry -> {
+                        String key = entry.getKey();
+                        if (key.startsWith("advancement"))
+                            startErasing.setTrue();
+                        if (startErasing.isFalse())
+                            return;
+                        keysToRemove.add(key);
+                    });
+            jsonobject.remove("_");
+            keysToRemove.forEach(jsonobject::remove);
 
-	private void writeData(String data) {
-		mergedLangData.add(data);
-		populatedLangData.values()
-			.forEach(l -> l.add(data));
-	}
+            addAll("Game Elements", jsonobject);
+        }
+    }
 
-	private void writeEntry(String key, String value) {
-		mergedLangData.add(new LangEntry(key, value));
-		populatedLangData.forEach((k, l) -> {
-			ForeignLangEntry entry = new ForeignLangEntry(key, value, allLocalizedEntries.get(k));
-			if (entry.isMissing())
-				missingTranslationTally.get(k)
-					.increment();
-			l.add(entry);
-		});
-	}
+    private void addAll(String header, JsonObject jsonObject) {
+        header = String.format(CATEGORY_HEADER, header);
 
-	protected boolean shouldAddLineBreak(String key, String previousKey) {
-		// Always put tooltips and ponder scenes in their own paragraphs
-		if (key.endsWith(".tooltip"))
-			return true;
-		if (key.startsWith(modid + ".ponder") && key.endsWith(PonderScene.TITLE_KEY))
-			return true;
+        writeData("\n");
+        writeData(header);
+        writeData("\n\n");
 
-		key = key.replaceFirst("\\.", "");
-		previousKey = previousKey.replaceFirst("\\.", "");
+        MutableObject<String> previousKey = new MutableObject<>("");
+        jsonObject.entrySet()
+                .stream()
+                .forEachOrdered(entry -> {
+                    String key = entry.getKey();
+                    if (shouldIgnore(key))
+                        return;
+                    String value = entry.getValue()
+                            .getAsString();
+                    if (!previousKey.getValue()
+                            .isEmpty() && shouldAddLineBreak(key, previousKey.getValue()))
+                        writeData("\n");
+                    writeEntry(key, value);
+                    previousKey.setValue(key);
+                });
 
-		String[] split = key.split("\\.");
-		String[] split2 = previousKey.split("\\.");
-		if (split.length == 0 || split2.length == 0)
-			return false;
+        writeData("\n");
+    }
 
-		// Start new paragraph if keys before second point do not match
-		return !split[0].equals(split2[0]);
-	}
+    private void writeData(String data) {
+        mergedLangData.add(data);
+        populatedLangData.values()
+                .forEach(l -> l.add(data));
+    }
 
-	private List<Pair<String, JsonElement>> getAllLocalizationFiles() {
-		ArrayList<Pair<String, JsonElement>> list = new ArrayList<>();
+    private void writeEntry(String key, String value) {
+        mergedLangData.add(new LangEntry(key, value));
+        populatedLangData.forEach((k, l) -> {
+            ForeignLangEntry entry = new ForeignLangEntry(key, value, allLocalizedEntries.get(k));
+            if (entry.isMissing())
+                missingTranslationTally.get(k)
+                        .increment();
+            l.add(entry);
+        });
+    }
 
-		String filepath = "assets/" + modid + "/lang/";
-		try (InputStream resourceStream = ClassLoader.getSystemResourceAsStream(filepath)) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceStream));
-			while (true) {
-				String readLine = bufferedReader.readLine();
-				if (readLine == null)
-					break;
-				if (!readLine.endsWith(".json"))
-					continue;
-				if (readLine.startsWith("en_us") || readLine.startsWith("en_ud"))
-					continue;
-				list.add(Pair.of(readLine, FilesHelper.loadJsonResource(filepath + readLine)));
-			}
-		} catch (IOException | NullPointerException e) {
-			e.printStackTrace();
-		}
+    protected boolean shouldAddLineBreak(String key, String previousKey) {
+        // Always put tooltips and ponder scenes in their own paragraphs
+        if (key.endsWith(".tooltip"))
+            return true;
+        if (key.startsWith(modid + ".ponder") && key.endsWith(PonderScene.TITLE_KEY))
+            return true;
 
-		return list;
-	}
+        key = key.replaceFirst("\\.", "");
+        previousKey = previousKey.replaceFirst("\\.", "");
 
-	private void collectEntries() {
-		for (LangPartial partial : partials){
-			addAll(partial.getDisplay(), partial.provide().getAsJsonObject());
-		}
-	}
+        String[] split = key.split("\\.");
+        String[] split2 = previousKey.split("\\.");
+        if (split.length == 0 || split2.length == 0)
+            return false;
 
-	@SuppressWarnings("deprecation")
-	private void save(CachedOutput cache, List<Object> dataIn, int missingKeys, Path target, String message)
-			throws IOException {
-		LOGGER.info(message);
+        // Start new paragraph if keys before second point do not match
+        return !split[0].equals(split2[0]);
+    }
 
-		ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
-		HashingOutputStream hashingoutputstream = new HashingOutputStream(Hashing.sha1(), bytearrayoutputstream);
+    private List<Pair<String, JsonElement>> getAllLocalizationFiles() {
+        ArrayList<Pair<String, JsonElement>> list = new ArrayList<>();
 
-		Writer writer = new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8);
-		writer.append(createString(dataIn, missingKeys));
-		writer.close();
+        String filepath = "assets/" + modid + "/lang/";
+        try (InputStream resourceStream = ClassLoader.getSystemResourceAsStream(filepath)) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceStream));
+            while (true) {
+                String readLine = bufferedReader.readLine();
+                if (readLine == null)
+                    break;
+                if (!readLine.endsWith(".json"))
+                    continue;
+                if (readLine.startsWith("en_us") || readLine.startsWith("en_ud"))
+                    continue;
+                list.add(Pair.of(readLine, FilesHelper.loadJsonResource(filepath + readLine)));
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
 
-		cache.writeIfNeeded(target, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());
-	}
+        return list;
+    }
 
-	private String createString(List<Object> data, int missingKeys) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("{\n");
-		if (missingKeys != -1)
-			builder.append("\t\"_\": \"Missing Localizations: ").append(missingKeys).append("\",\n");
-		data.forEach(builder::append);
-		builder.append("\t\"_\": \"Thank you for translating ").append(name).append("!\"\n\n");
-		builder.append("}");
-		return builder.toString();
-	}
+    private void collectEntries() {
+        for (LangPartial partial : partials) {
+            addAll(partial.getDisplay(), partial.provide().getAsJsonObject());
+        }
+    }
 
-	private static class LangEntry {
-		static final String ENTRY_FORMAT = "\t\"%s\": %s,\n";
+    @SuppressWarnings("deprecation")
+    private void save(CachedOutput cache, List<Object> dataIn, int missingKeys, Path target, String message)
+            throws IOException {
+        LOGGER.info(message);
 
-		private final String key;
-		private final String value;
+        ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
+        HashingOutputStream hashingoutputstream = new HashingOutputStream(Hashing.sha1(), bytearrayoutputstream);
 
-		LangEntry(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
+        Writer writer = new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8);
+        writer.append(createString(dataIn, missingKeys));
+        writer.close();
 
-		@Override
-		public String toString() {
-			return String.format(ENTRY_FORMAT, key, GSON.toJson(value, String.class));
-		}
+        cache.writeIfNeeded(target, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());
+    }
 
-	}
+    private String createString(List<Object> data, int missingKeys) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
+        if (missingKeys != -1)
+            builder.append("\t\"_\": \"Missing Localizations: ").append(missingKeys).append("\",\n");
+        data.forEach(builder::append);
+        builder.append("\t\"_\": \"Thank you for translating ").append(name).append("!\"\n\n");
+        builder.append("}");
+        return builder.toString();
+    }
 
-	private static class ForeignLangEntry extends LangEntry {
+    private static class LangEntry {
+        static final String ENTRY_FORMAT = "\t\"%s\": %s,\n";
 
-		private final boolean missing;
+        private final String key;
+        private final String value;
 
-		ForeignLangEntry(String key, String value, Map<String, String> localizationMap) {
-			super(key, localizationMap.getOrDefault(key, "UNLOCALIZED: " + value));
-			missing = !localizationMap.containsKey(key);
-		}
+        LangEntry(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
 
-		public boolean isMissing() {
-			return missing;
-		}
+        @Override
+        public String toString() {
+            return String.format(ENTRY_FORMAT, key, GSON.toJson(value, String.class));
+        }
 
-	}
+    }
+
+    private static class ForeignLangEntry extends LangEntry {
+
+        private final boolean missing;
+
+        ForeignLangEntry(String key, String value, Map<String, String> localizationMap) {
+            super(key, localizationMap.getOrDefault(key, "UNLOCALIZED: " + value));
+            missing = !localizationMap.containsKey(key);
+        }
+
+        public boolean isMissing() {
+            return missing;
+        }
+
+    }
 
 }

@@ -2,6 +2,7 @@ package plus.dragons.createdragonlib.advancement;
 
 import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.advancement.CreateAdvancement;
+import com.simibubi.create.foundation.utility.Components;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import net.minecraft.advancements.Advancement;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import plus.dragons.createdragonlib.advancement.critereon.SimpleTrigger;
 import plus.dragons.createdragonlib.advancement.critereon.TriggerFactory;
 import plus.dragons.createdragonlib.mixin.CreateAdvancementConstructor;
-import com.simibubi.create.foundation.utility.Components;
 
 import java.util.*;
 import java.util.function.Consumer;

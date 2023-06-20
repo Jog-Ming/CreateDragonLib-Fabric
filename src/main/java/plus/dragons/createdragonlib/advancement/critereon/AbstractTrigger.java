@@ -72,7 +72,7 @@ public abstract class AbstractTrigger<T extends AbstractTrigger.Instance> implem
         }
 
         protected abstract boolean test(@Nullable List<Supplier<Object>> suppliers);
-        
+
     }
 
 }

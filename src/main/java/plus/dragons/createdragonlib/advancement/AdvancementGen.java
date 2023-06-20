@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @ApiStatus.Internal
@@ -35,8 +35,8 @@ class AdvancementGen implements DataProvider {
             if (!set.add(advancement.getId()))
                 throw new IllegalStateException("Duplicate advancement " + advancement.getId());
             Path advancementPath = path.resolve("data/"
-                + advancement.getId().getNamespace() + "/advancements/"
-                + advancement.getId().getPath() + ".json"
+                    + advancement.getId().getNamespace() + "/advancements/"
+                    + advancement.getId().getPath() + ".json"
             );
             try {
                 DataProvider.saveStable(cache, advancement.deconstruct().serializeToJson(), advancementPath);

@@ -2,15 +2,11 @@ package plus.dragons.createdragonlib.advancement.critereon;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,12 +16,9 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrigger.TriggerInstance>{
+public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrigger.TriggerInstance> {
 
     private final ResourceLocation id;
 
@@ -40,7 +33,7 @@ public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrig
         return new TriggerInstance(id, pPlayer, requirements);
     }
 
-    public void trigger(Player pPlayer, int change){
+    public void trigger(Player pPlayer, int change) {
         this.trigger((ServerPlayer) pPlayer, (triggerInstance) -> triggerInstance.matches(id, pPlayer, change));
     }
 
@@ -51,36 +44,39 @@ public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrig
     }
 
     private static class AccumulativeData extends SavedData {
-        public Table<ResourceLocation,UUID,Integer> data;
-        public void change(ResourceLocation resourceLocation ,UUID playerId, int i){
-            var temp = data.get(resourceLocation,playerId);
-            temp = temp==null? 0 : temp;
-            temp +=i;
-            data.put(resourceLocation,playerId,temp);
+        public Table<ResourceLocation, UUID, Integer> data;
+
+        public void change(ResourceLocation resourceLocation, UUID playerId, int i) {
+            var temp = data.get(resourceLocation, playerId);
+            temp = temp == null ? 0 : temp;
+            temp += i;
+            data.put(resourceLocation, playerId, temp);
             setDirty();
         }
-        public int get(ResourceLocation resourceLocation ,UUID playerId){
+
+        public int get(ResourceLocation resourceLocation, UUID playerId) {
             var ret = data.get(resourceLocation, playerId);
             return ret == null ? 0 : ret;
         }
+
         public AccumulativeData() {
             data = HashBasedTable.create();
         }
 
         @SuppressWarnings("all")
-        public static AccumulativeData load(CompoundTag compoundNBT){
+        public static AccumulativeData load(CompoundTag compoundNBT) {
             AccumulativeData ret = new AccumulativeData();
 
-            if(!compoundNBT.contains("AccumulativeData"))
+            if (!compoundNBT.contains("AccumulativeData"))
                 return ret;
 
             var list = NBTHelper.readCompoundList((ListTag) compoundNBT.get("AccumulativeData"), c -> new TriCell(
-                    NBTHelper.readResourceLocation(c,"TriggerId"),
+                    NBTHelper.readResourceLocation(c, "TriggerId"),
                     c.getUUID("PlayerId"),
                     c.getInt("Count")
             ));
 
-            list.forEach(triCell -> ret.data.put(triCell.rl,triCell.id,triCell.i));
+            list.forEach(triCell -> ret.data.put(triCell.rl, triCell.id, triCell.i));
             return ret;
         }
 
@@ -88,16 +84,17 @@ public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrig
         public CompoundTag save(CompoundTag pCompoundTag) {
             var dataListTag = NBTHelper.writeCompoundList(data.cellSet().stream().toList(), cell -> {
                 var ret = new CompoundTag();
-                NBTHelper.writeResourceLocation(ret,"TriggerId",cell.getRowKey());
-                ret.putUUID("PlayerId",cell.getColumnKey());
-                ret.putInt("Count",cell.getValue());
+                NBTHelper.writeResourceLocation(ret, "TriggerId", cell.getRowKey());
+                ret.putUUID("PlayerId", cell.getColumnKey());
+                ret.putInt("Count", cell.getValue());
                 return ret;
             });
-            pCompoundTag.put("AccumulativeData",dataListTag);
+            pCompoundTag.put("AccumulativeData", dataListTag);
             return pCompoundTag;
         }
 
-        private record TriCell(ResourceLocation rl, UUID id, int i){}
+        private record TriCell(ResourceLocation rl, UUID id, int i) {
+        }
     }
 
     private static AccumulativeData get(Level level) {
@@ -132,5 +129,5 @@ public class AccumulativeTrigger extends SimpleCriterionTrigger<AccumulativeTrig
             return jsonObject;
         }
     }
-    
+
 }

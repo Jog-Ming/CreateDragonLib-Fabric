@@ -35,12 +35,12 @@ public class SimpleTrigger extends AbstractTrigger<SimpleTrigger.Instance> imple
         public Instance(ResourceLocation idIn) {
             super(idIn, EntityPredicate.Composite.ANY);
         }
-        
+
         @Override
         protected boolean test(@Nullable List<Supplier<Object>> suppliers) {
             return true;
         }
-        
+
     }
-    
+
 }

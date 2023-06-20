@@ -9,19 +9,19 @@ import plus.dragons.createdragonlib.tag.TagGen;
 
 public class DragonLib implements ModInitializer {
 
-  public static final String MOD_ID = "create_dragon_lib";
-  private static final Logger LOGGER = LogManager.getLogger();
+    public static final String MOD_ID = "create_dragon_lib";
+    private static final Logger LOGGER = LogManager.getLogger();
 
-  @Override
-  public void onInitialize() {
-    LOGGER.info(
-      "Create: Dragon Lib " +
-      FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getName() +
-      " has initialized, ready to support your Create add-ons!"
-    );
-  }
+    @Override
+    public void onInitialize() {
+        LOGGER.info(
+                "Create: Dragon Lib " +
+                        FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getName() +
+                        " has initialized, ready to support your Create add-ons!"
+        );
+    }
 
-  public void datagen(final FabricDataGenerator datagen) {
-    TagGen.genAll();
-  }
+    public void datagen(final FabricDataGenerator datagen) {
+        TagGen.genAll();
+    }
 }

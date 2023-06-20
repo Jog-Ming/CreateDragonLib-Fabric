@@ -8,9 +8,9 @@ import java.util.IdentityHashMap;
 
 @SuppressWarnings("UnstableApiUsage")
 public record FluidLavaReaction(BlockState withLava, BlockState withFlowingLava, BlockState lavaOnSelf) {
-    
+
     private static final IdentityHashMap<FluidVariant, FluidLavaReaction> REACTIONS = new IdentityHashMap<>();
-    
+
     public static void register(FluidVariant type, BlockState withLava, BlockState withFlowingLava, BlockState lavaOnSelf) {
 //        FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(
 //            type, fluidState -> fluidState.isSource() ? withLava : withFlowingLava
@@ -20,10 +20,10 @@ public record FluidLavaReaction(BlockState withLava, BlockState withFlowingLava,
 //        ));
         REACTIONS.put(type, new FluidLavaReaction(withLava, withFlowingLava, lavaOnSelf));
     }
-    
+
     @Nullable
     public static FluidLavaReaction get(FluidVariant fluid) {
         return REACTIONS.get(fluid);
     }
-    
+
 }

@@ -39,22 +39,22 @@ SOFTWARE.
  * Originated from: {@link com.simibubi.create.foundation.utility.LangBuilder}
  */
 public class LangBuilder {
-    
+
     String modid;
     MutableComponent component;
-    
+
     public LangBuilder(String modid) {
         this.modid = modid;
     }
-    
+
     public LangBuilder space() {
         return text(" ");
     }
-    
+
     public LangBuilder newLine() {
         return text("\n");
     }
-    
+
     /**
      * Appends a localised component<br>
      * To add an independently formatted localised component, use add() and a nested
@@ -67,7 +67,7 @@ public class LangBuilder {
     public LangBuilder translate(String langKey, Object... args) {
         return add(Components.translatable(modid + "." + langKey, Lang.resolveBuilders(args)));
     }
-    
+
     /**
      * Appends a text component
      *
@@ -77,7 +77,7 @@ public class LangBuilder {
     public LangBuilder text(String literalText) {
         return add(Components.literal(literalText));
     }
-    
+
     /**
      * Appends a colored text component
      *
@@ -88,7 +88,7 @@ public class LangBuilder {
     public LangBuilder text(ChatFormatting format, String literalText) {
         return add(Components.literal(literalText).withStyle(format));
     }
-    
+
     /**
      * Appends a colored text component
      *
@@ -99,7 +99,7 @@ public class LangBuilder {
     public LangBuilder text(int color, String literalText) {
         return add(Components.literal(literalText).withStyle(s -> s.withColor(color)));
     }
-    
+
     /**
      * Appends the contents of another builder
      *
@@ -109,7 +109,7 @@ public class LangBuilder {
     public LangBuilder add(LangBuilder otherBuilder) {
         return add(otherBuilder.component());
     }
-    
+
     /**
      * Appends a component
      *
@@ -120,7 +120,7 @@ public class LangBuilder {
         component = component == null ? customComponent : component.append(customComponent);
         return this;
     }
-    
+
     /**
      * Applies the format to all added components
      *
@@ -132,7 +132,7 @@ public class LangBuilder {
         component = component.withStyle(format);
         return this;
     }
-    
+
     /**
      * Applies the color to all added components
      *
@@ -144,46 +144,46 @@ public class LangBuilder {
         component = component.withStyle(s -> s.withColor(color));
         return this;
     }
-    
+
     public MutableComponent component() {
         assertComponent();
         return component;
     }
-    
+
     public String string() {
         return component().getString();
     }
-    
+
     public String json() {
         return Component.Serializer.toJson(component());
     }
-    
+
     public void sendStatus(Player player) {
         player.displayClientMessage(component(), true);
     }
-    
+
     public void sendChat(Player player) {
         player.displayClientMessage(component(), false);
     }
-    
+
     public void addTo(List<? super MutableComponent> tooltip) {
         tooltip.add(component());
     }
-    
+
     public void forGoggles(List<? super MutableComponent> tooltip) {
         forGoggles(tooltip, 0);
     }
-    
+
     public void forGoggles(List<? super MutableComponent> tooltip, int indents) {
         tooltip.add(new LangBuilder(modid)
-            .text(Strings.repeat(' ', 4 + indents))
-            .add(this)
-            .component());
+                .text(Strings.repeat(' ', 4 + indents))
+                .add(this)
+                .component());
     }
-    
+
     private void assertComponent() {
         if (component == null)
             throw new IllegalStateException("No components were added to builder");
     }
-    
+
 }

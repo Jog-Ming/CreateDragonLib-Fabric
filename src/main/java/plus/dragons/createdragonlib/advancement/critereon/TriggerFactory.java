@@ -9,11 +9,11 @@ import java.util.List;
 
 public class TriggerFactory {
     private final List<CriterionTrigger<?>> triggers = new ArrayList<>();
-    
+
     public SimpleTrigger simple(ResourceLocation resourceLocation) {
         return add(new SimpleTrigger(resourceLocation));
     }
-    
+
     public AccumulativeTrigger accumulative(ResourceLocation resourceLocation) {
         return add(new AccumulativeTrigger(resourceLocation));
     }

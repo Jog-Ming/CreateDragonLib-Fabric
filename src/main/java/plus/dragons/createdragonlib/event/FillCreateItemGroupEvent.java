@@ -1,4 +1,4 @@
-package plus.dragons.createdragonlib.init;
+package plus.dragons.createdragonlib.event;
 
 import com.simibubi.create.infrastructure.item.CreateCreativeModeTab;
 import net.fabricmc.fabric.api.event.Event;
@@ -13,7 +13,7 @@ import java.util.*;
 
 public class FillCreateItemGroupEvent {
 
-    public static class Inserter{
+    public static class Inserter {
         private final NonNullList<ItemStack> items;
         private final Map<Item, List<ItemStack>> insertions = new IdentityHashMap<>();
 
@@ -23,8 +23,9 @@ public class FillCreateItemGroupEvent {
 
         /**
          * Add an {@link ItemStack} after an {@link Item}, should only target Create's existing items in the tab.
+         *
          * @param target the item to target
-         * @param stack the item stack to add
+         * @param stack  the item stack to add
          */
         public void addInsertion(ItemLike target, ItemStack stack) {
             insertions.computeIfAbsent(target.asItem(), $ -> new ArrayList<>()).add(stack);
@@ -32,6 +33,7 @@ public class FillCreateItemGroupEvent {
 
         /**
          * Add some {@link ItemStack}s after an {@link Item}, should only target Create's existing items in the tab.
+         *
          * @param target the item to target
          * @param stacks the item stacks to add
          */
@@ -53,8 +55,6 @@ public class FillCreateItemGroupEvent {
             }
         }
     }
-
-    
 
 
     public interface CallBack {

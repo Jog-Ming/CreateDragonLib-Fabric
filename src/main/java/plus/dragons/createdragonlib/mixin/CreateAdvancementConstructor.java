@@ -8,10 +8,10 @@ import java.util.function.UnaryOperator;
 
 @Mixin(value = CreateAdvancement.class, remap = false)
 public interface CreateAdvancementConstructor {
-    
+
     @Invoker("<init>")
     static CreateAdvancement createInstance(String id, UnaryOperator<?> transform) {
         throw new AbstractMethodError();
     }
-    
+
 }

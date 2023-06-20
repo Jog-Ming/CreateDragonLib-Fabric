@@ -1,6 +1,5 @@
 package plus.dragons.createdragonlib.mixin;
 
-import com.simibubi.create.infrastructure.item.BaseCreativeModeTab;
 import com.simibubi.create.infrastructure.item.CreateCreativeModeTab;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionResult;
@@ -9,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import plus.dragons.createdragonlib.init.FillCreateItemGroupEvent;
+import plus.dragons.createdragonlib.event.FillCreateItemGroupEvent;
 
 @Mixin(CreateCreativeModeTab.class)
 public class CreateItemGroupBaseMixin {

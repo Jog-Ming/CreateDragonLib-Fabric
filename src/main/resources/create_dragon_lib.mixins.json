@@ -10,7 +10,10 @@
     "CreateItemGroupBaseMixin",
     "FluidReactionsMixin"
   ],
-  "client": [],
+  "client": [
+    "FogRendererMixin",
+    "TextureAtlasMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

@@ -17,26 +17,27 @@ import plus.dragons.createdragonlib.advancement.CreateAdvancementAccess;
 @Mixin(value = CreateAdvancement.class, remap = false)
 @Implements(@Interface(iface = CreateAdvancementAccess.class, prefix = "createDragonLib$", remap = Interface.Remap.NONE))
 public class CreateAdvancementMixin {
-    
-    @Nullable private AdvancementHolder createDragonLib$advancement = null;
-    
+
+    @Nullable
+    private AdvancementHolder createDragonLib$advancement = null;
+
     public void createDragonLib$fromAdvancementHolder(@NotNull AdvancementHolder advancement) {
         this.createDragonLib$advancement = advancement;
     }
-    
+
     @Inject(method = "isAlreadyAwardedTo", at = @At("HEAD"), cancellable = true)
     private void createDragonLibAlreadyAwardedTo(Player player, CallbackInfoReturnable<Boolean> cir) {
-        if(createDragonLib$advancement != null) {
+        if (createDragonLib$advancement != null) {
             cir.setReturnValue(createDragonLib$advancement.isAlreadyAwardedTo(player));
         }
     }
-    
+
     @Inject(method = "awardTo", at = @At("HEAD"), cancellable = true)
     private void createDragonLibAwardTo(Player player, CallbackInfo ci) {
-        if(createDragonLib$advancement != null) {
+        if (createDragonLib$advancement != null) {
             createDragonLib$advancement.awardTo(player);
             ci.cancel();
         }
     }
-    
+
 }

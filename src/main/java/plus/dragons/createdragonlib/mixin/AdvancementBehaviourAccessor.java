@@ -11,5 +11,5 @@ public interface AdvancementBehaviourAccessor {
 
     @Accessor(remap = false)
     UUID getPlayerId();
-    
+
 }

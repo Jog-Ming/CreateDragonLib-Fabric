@@ -29,8 +29,6 @@ repositories {
     maven { url = "https://maven.cafeteria.dev/releases/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://maven.gegy.dev" }
-    // Old and unused
-    //maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven { url = "https://modmaven.dev" }
     maven {
         url = "https://maven.jamieswhiteshirt.com/libs-release"
@@ -102,7 +100,7 @@ publishing {
         }
         snapshot(MavenPublication) {
             artifactId = archivesBaseName
-            version = "${version}-SNAPSHOT.${new Date().format('yyyyMMdd')}"
+            version = "SNAPSHOT.${new Date().format('yyyyMMdd')}"
             from components.java
         }
     }
