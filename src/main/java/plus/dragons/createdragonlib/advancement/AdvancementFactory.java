@@ -13,12 +13,7 @@ public class AdvancementFactory {
         this.advancementGen = new AdvancementGen(name, modid);
     }
 
-    @Deprecated(since = "1.1.1", forRemoval = true)
     public static AdvancementFactory create(String name, String modid) {
-        return new AdvancementFactory(name, modid);
-    }
-
-    public static AdvancementFactory create(String name, String modid, Runnable preTask) {
         return new AdvancementFactory(name, modid);
     }
 

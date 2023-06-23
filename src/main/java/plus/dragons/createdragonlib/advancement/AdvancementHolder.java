@@ -36,7 +36,7 @@ public class AdvancementHolder {
     @Nullable
     protected final AdvancementHolder parent;
     @Nullable
-    protected final CreateAdvancement createAdvancement;
+    protected CreateAdvancement createAdvancement;
     protected Advancement advancement;
 
     protected AdvancementHolder(String modid, String id, Advancement.Builder builder, @Nullable AdvancementHolder parent, boolean builtin, String title, String description, TriggerFactory triggerFactory) {
@@ -47,8 +47,6 @@ public class AdvancementHolder {
             this.builtinTrigger = triggerFactory.simple(new ResourceLocation(modid, "builtin/" + id));
             this.builder.addCriterion("builtin", builtinTrigger.instance());
         } else this.builtinTrigger = null;
-        this.createAdvancement = CreateAdvancementConstructor.createInstance(id, $ -> $);
-        ((CreateAdvancementAccess) createAdvancement).fromAdvancementHolder(this);
         this.titleKey = new StringJoiner(".").add("advancement").add(modid).add(id).toString();
         this.descriptionKey = titleKey + ".desc";
         this.title = title;
@@ -81,8 +79,13 @@ public class AdvancementHolder {
     }
 
     public CreateAdvancement asCreateAdvancement() {
-        if (createAdvancement == null)
-            throw new UnsupportedOperationException("Advancement [" + id + "] can not convert into CreateAdvancement!");
+        if (createAdvancement == null){
+            createAdvancement = CreateAdvancementConstructor.createInstance(id.getPath(), $ -> $);
+            ((CreateAdvancementAccess) createAdvancement).fromAdvancementHolder(this);
+            if(createAdvancement==null) {
+                throw new UnsupportedOperationException("Advancement [" + id + "] can not convert into CreateAdvancement!");
+            }
+        }
         return createAdvancement;
     }
 
