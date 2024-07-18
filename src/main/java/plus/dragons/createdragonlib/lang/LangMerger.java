@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.ponder.PonderScene;
 import com.simibubi.create.foundation.utility.FilesHelper;
-import net.minecraft.data.CachedOutput;
+import net.minecraft.data.HashCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.util.GsonHelper;
@@ -88,7 +88,7 @@ class LangMerger implements DataProvider {
     }
 
     @Override
-    public void run(CachedOutput cache) throws IOException {
+    public void run(HashCache cache) throws IOException {
         Path path = this.dataGenerator.getOutputFolder()
                 .resolve("assets/" + modid + "/lang/" + "en_us.json");
 
@@ -263,7 +263,7 @@ class LangMerger implements DataProvider {
     }
 
     @SuppressWarnings("deprecation")
-    private void save(CachedOutput cache, List<Object> dataIn, int missingKeys, Path target, String message)
+    private void save(HashCache cache, List<Object> dataIn, int missingKeys, Path target, String message)
             throws IOException {
         LOGGER.info(message);
 

@@ -8,7 +8,8 @@
     "CreateAdvancementConstructor",
     "CreateAdvancementMixin",
     "CreateItemGroupBaseMixin",
-    "FluidReactionsMixin"
+    "FluidReactionsMixin",
+    "HashCacheMixin"
   ],
   "client": [
     "FogRendererMixin",

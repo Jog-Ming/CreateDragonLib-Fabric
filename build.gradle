@@ -1,6 +1,5 @@
 plugins {
-    id "fabric-loom" version "0.12-SNAPSHOT"
-    id "org.quiltmc.quilt-mappings-on-loom" version "4.2.0"
+    id "fabric-loom" version "1.7-SNAPSHOT"
     id 'maven-publish'
 }
 
@@ -12,43 +11,21 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    maven { url = "https://hephaestus.dev/release" }
-    maven { url = "https://api.modrinth.com/maven" }
-    maven { url = "https://cursemaven.com" }
-    maven { url = "https://maven.parchmentmc.org" }
-    maven { url = "https://maven.fabricmc.net/" }
-    maven { url = "https://maven.tterrag.com/" }
-    maven { url = "https://storage.googleapis.com/devan-maven/" }
-    maven { url = "https://maven.shedaniel.me/" }
-    maven { url = "https://aperlambda.github.io/maven" }
-    maven { url = "https://ladysnake.jfrog.io/artifactory/mods" }
-    maven { url = "https://maven.kotlindiscord.com/repository/terraformers/" }
-    maven { url = "https://mvn.devos.one/releases/" }
-    maven { url = "https://mvn.devos.one/snapshots/" }
-    maven { url = "https://maven.terraformersmc.com/" }
-    maven { url = "https://maven.cafeteria.dev/releases/" }
-    maven { url = "https://jitpack.io/" }
-    maven { url = "https://maven.gegy.dev" }
-    maven { url = "https://modmaven.dev" }
-    maven {
-        url = "https://maven.jamieswhiteshirt.com/libs-release"
-        content {
-            includeGroup("com.jamieswhiteshirt")
-        }
-    }
+    maven { url = "https://api.modrinth.com/maven" } // LazyDFU
+    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib, Forge Tags, Milk Lib, Registrate
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // Forge Config API Port
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+    maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
+    maven { url = "https://maven.tterrag.com/" } // Flywheel
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings(loom.layered {
-//        it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${project.minecraft_version}+build.${project.qm_version}:v2"))
-        it.parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
-        it.officialMojangMappings { nameSyntheticMembers = false }
-    })
+    mappings loom.layered {officialMojangMappings { nameSyntheticMembers = false }}
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    modImplementation "com.simibubi.create:create-fabric-1.19.2:${create_version}"
+    modImplementation "com.simibubi.create:create-fabric-1.18.2:${create_version}"
 }
 
 processResources {
