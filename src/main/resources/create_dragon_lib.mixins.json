@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AdvancementBehaviourAccessor",
+    "CommonEventsMixin",
     "CreateAdvancementConstructor",
     "CreateAdvancementMixin",
     "CreateItemGroupBaseMixin",

@@ -12,7 +12,6 @@ public record FluidLavaReaction(BlockState withLava, BlockState withFlowingLava,
     private static final IdentityHashMap<FluidVariant, FluidLavaReaction> REACTIONS = new IdentityHashMap<>();
 
     public static void register(FluidVariant type, BlockState withLava, BlockState withFlowingLava, BlockState lavaOnSelf) {
-        // FIXME it does not affect real world fluid interaction
 //        FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(
 //            type, fluidState -> fluidState.isSource() ? withLava : withFlowingLava
 //        ));
