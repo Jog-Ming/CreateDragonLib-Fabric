@@ -3,6 +3,7 @@ package plus.dragons.createdragonlib.mixin;
 import com.simibubi.create.content.fluids.FluidReactions;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -41,8 +42,8 @@ public class FluidReactionsMixin {
 
     @Inject(method = "handlePipeSpillCollision", at = @At("HEAD"), cancellable = true)
     private static void createDragonLib$handleSpillCollision(Level world, BlockPos pos, Fluid pipeFluid, FluidState worldFluid, CallbackInfo ci) {
-        FluidVariant typeP = FluidVariant.of(pipeFluid);
-        FluidVariant typeW = FluidVariant.of(worldFluid.getType());
+        FluidVariant typeP = FluidVariant.of(FluidHelper.convertToStill(pipeFluid));
+        FluidVariant typeW = FluidVariant.of(FluidHelper.convertToStill(worldFluid.getType()));
         BlockState blockState = null;
         if (typeW.getFluid() == Fluids.LAVA) {
             FluidLavaReaction reaction = FluidLavaReaction.get(typeP);
