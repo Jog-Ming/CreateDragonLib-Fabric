@@ -10,7 +10,7 @@
     "CreateAdvancementMixin",
     "CreateItemGroupBaseMixin",
     "FluidReactionsMixin",
-    "HashCacheMixin"
+    "HashCacheAccessor"
   ],
   "client": [
     "FogRendererMixin",

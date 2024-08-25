@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
+import plus.dragons.createdragonlib.porting_lib.CachedOutputWrapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -274,7 +275,7 @@ class LangMerger implements DataProvider {
         writer.append(createString(dataIn, missingKeys));
         writer.close();
 
-        cache.writeIfNeeded(target, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());
+        new CachedOutputWrapper(cache).writeIfNeeded(target, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());
     }
 
     private String createString(List<Object> data, int missingKeys) {
